@@ -11,8 +11,8 @@ Ports:
 #include <Arduino.h>
 #include <Wire.h>
 
-//#define DEBUG // remove debug so pin 0 and 1 can be used for IO
-//#define DEBUG_READ
+#define DEBUG // remove debug so pin 0 and 1 can be used for IO
+#define DEBUG_READ
 
 #define I2C_ADDRESS 8
 
@@ -94,8 +94,8 @@ void onRequest()
 void onReceive(int numBytes)
 {
 #ifdef DEBUG_READ
-  Serial.print("Received bytes: ");
-  Serial.println(numBytes);
+  //Serial.print(F("Received bytes: "));
+  //Serial.println(numBytes);
 #endif
   int cmd = Wire.read();
 
