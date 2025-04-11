@@ -57,7 +57,7 @@ void ArduinoPortExpanderComponent::dump_config() {
 bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
   bool success;
   uint8_t data[2];
-  ESP_LOGE(TAG, "Trying digital read");
+  ESP_LOGD(TAG, "Trying digital read");
 
 
  this->write_register(CMD_DIGITAL_READ, nullptr, 0);
@@ -71,10 +71,10 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
 
 
 
-  ESP_LOGE(TAG, "digital read pin: %d ok: %d value %d ", pin, success, read_buffer_);
+  ESP_LOGD(TAG, "digital read pin: %d ok: %d value %d ", pin, success, read_buffer_);
 
   uint8_t value = read_buffer_[0];
-    ESP_LOGE(TAG, "analog read pin: %d ok: %d value %d ", pin, success, value);
+    ESP_LOGD(TAG, "analog read pin: %d ok: %d value %d ", pin, success, value);
 
   return value ;
 }
@@ -82,7 +82,7 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
 float ArduinoPortExpanderComponent::analog_read(uint8_t pin) {
   uint16_t value;
   bool ok = (this->read_register(CMD_ANALOG_READ_A0 + pin, (uint8_t *) &value, 2));
-  ESP_LOGE(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
+  ESP_LOGD(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
   return value;
 }
 
