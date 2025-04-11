@@ -60,7 +60,7 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
   ESP_LOGD(TAG, "Trying digital read");
 
 
- this->write_register(CMD_DIGITAL_READ, nullptr, 0, false);
+ this->write_register(CMD_DIGITAL_READ, pin, 1, false);
   success = (this->read_register(pin, this->read_buffer_, 1) == i2c::ERROR_OK);
 
   if (!success) {
@@ -75,7 +75,7 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
   ESP_LOGD(TAG, "digital read pin: %d ok: %d value %d ", pin, success, read_buffer_);
 
   uint8_t value = read_buffer_[0];
-    ESP_LOGD(TAG, "analog read pin: %d ok: %d value %d ", pin, success, value);
+    ESP_LOGD(TAG, "digital read pin: %d ok: %d value %d ", pin, success, value);
 
   return value ;
 }
