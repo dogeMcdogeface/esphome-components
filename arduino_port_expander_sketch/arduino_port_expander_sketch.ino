@@ -168,7 +168,7 @@ void onReceive(int numBytes)
   {
     uint8_t aa =Wire.read();
     uint8_t bb =Wire.read();
-    int val = aa;
+    int val = aa | (bb << 8);
     analogWrite(pin, val);
 #ifdef DEBUG
     Serial.print(F("aa "));
