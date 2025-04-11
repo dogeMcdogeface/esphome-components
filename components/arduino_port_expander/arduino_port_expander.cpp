@@ -76,7 +76,7 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
   uint8_t value = read_buffer_[0];
     ESP_LOGV(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
 
-  return value & (1 << bit);
+  return value ;
 }
 
 float ArduinoPortExpanderComponent::analog_read(uint8_t pin) {
