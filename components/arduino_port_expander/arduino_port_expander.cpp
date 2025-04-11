@@ -46,7 +46,7 @@ void ArduinoPortExpanderComponent::setup() {
   this->write_register(this->analog_reference_, nullptr, 0);
   ESP_LOGCONFIG(TAG, "Successfully configured.");
 }
-void ArduinoPortExpanderComponent::loop() { this->read_valid_ = this->read_gpio_(); }
+void ArduinoPortExpanderComponent::loop() { }
 void ArduinoPortExpanderComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "ArduinoPortExpander:");
   LOG_I2C_DEVICE(this)
@@ -55,12 +55,37 @@ void ArduinoPortExpanderComponent::dump_config() {
   }
 }
 bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
-  if (!this->read_valid_)
-    this->read_valid_ = read_gpio_();
-  uint8_t bit = pin % 8;
-  uint8_t value = pin < 8 ? this->read_buffer_[0] : pin < 16 ? this->read_buffer_[1] : this->read_buffer_[2];
+  bool success;
+  uint8_t data[2];
+  ESP_LOGV(TAG, "Trying digital read");
+
+
+ this->write_register(CMD_DIGITAL_READ, nullptr, 0);
+  success = (this->read_register(CMD_DIGITAL_READ, this->read_buffer_, 1) == i2c::ERROR_OK);
+
+  if (!success) {
+    this->status_set_warning();
+  }
+  this->status_clear_warning();
+
+
+
+
+  ESP_LOGV(TAG, "digital read pin: %d ok: %d value %d ", pin, ok, read_buffer_);
+
+  uint8_t value = read_buffer_[0];
+    ESP_LOGV(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
+
   return value & (1 << bit);
 }
+
+float ArduinoPortExpanderComponent::analog_read(uint8_t pin) {
+  uint16_t value;
+  bool ok = (this->read_register(CMD_ANALOG_READ_A0 + pin, (uint8_t *) &value, 2));
+  ESP_LOGV(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
+  return value;
+}
+
 void ArduinoPortExpanderComponent::digital_write(uint8_t pin, bool value) {
   if (this->is_failed())
     return;
@@ -83,9 +108,8 @@ void ArduinoPortExpanderComponent::pin_mode(uint8_t pin, gpio::Flags flags) {
   } else {
     ESP_LOGE(TAG, "Invalid pin mode for pin %d", pin);
   }
-  this->read_valid_ = false;
 }
-bool ArduinoPortExpanderComponent::read_gpio_() {
+/*bool ArduinoPortExpanderComponent::read_gpio_() {
   bool success;
   uint8_t data[2];
 
@@ -97,7 +121,7 @@ bool ArduinoPortExpanderComponent::read_gpio_() {
   }
   this->status_clear_warning();
   return true;
-}
+}*/
 
 void ArduinoPortExpanderGPIOPin::setup() {
   pin_mode(flags_);
@@ -115,12 +139,7 @@ std::string ArduinoPortExpanderGPIOPin::dump_summary() const {
   return buffer;
 }
 
-float ArduinoPortExpanderComponent::analog_read(uint8_t pin) {
-  uint16_t value;
-  bool ok = (this->read_register(CMD_ANALOG_READ_A0 + pin, (uint8_t *) &value, 2));
-  ESP_LOGV(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
-  return value;
-}
+
 
 }  // namespace arduino_port_expander
 }  // namespace esphome

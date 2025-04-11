@@ -45,50 +45,14 @@ void loop()
 volatile byte buffer[3];
 volatile byte len = 1;
 
-#define DIGITAL_READ(b, pin, mask) \
-  if (digitalRead(pin))            \
-    buffer[b] |= mask;
-
-void readDigital()
+void readDigital(int pin)
 {
-  len = 3;
-  buffer[0] = 0;
-  DIGITAL_READ(0, 0, 1);
-  DIGITAL_READ(0, 1, 2);
-  DIGITAL_READ(0, 2, 4);
-  DIGITAL_READ(0, 3, 8);
-  DIGITAL_READ(0, 4, 16);
-  DIGITAL_READ(0, 5, 32);
-  DIGITAL_READ(0, 6, 64);
-  DIGITAL_READ(0, 7, 128);
-
-  buffer[1] = 0;
-  DIGITAL_READ(1, 8, 1);
-  DIGITAL_READ(1, 9, 2);
-  DIGITAL_READ(1, 10, 4);
-  DIGITAL_READ(1, 11, 8);
-  DIGITAL_READ(1, 12, 16);
-  DIGITAL_READ(1, 13, 32);
-  DIGITAL_READ(1, A0, 64);
-  DIGITAL_READ(1, A1, 128);
-
-  buffer[2] = 0;
-  DIGITAL_READ(2, A2, 1);
-  DIGITAL_READ(2, A3, 2);
-
-// I2C
-//DIGITAL_READ(2, A4, 4);
-//DIGITAL_READ(2, A5, 8);
-
-// DIGITAL READ not supports on A3 .. A7
+  int val = digitalRead(pin);
+  len = 1;
+  buffer[0] = val;
 #ifdef DEBUG_READ
-  Serial.print(F("Read 3 bytes: "));
-  Serial.print(buffer[0]);
-  Serial.print(' ');
-  Serial.print(buffer[1]);
-  Serial.print(' ');
-  Serial.println(buffer[2]);
-
+  Serial.print(F("Read digital pin "));
+  Serial.println(pin);
 #endif
 }
 void readAnalog(int pin)
@@ -138,7 +102,9 @@ void onReceive(int numBytes)
   switch (cmd)
   {
   case CMD_DIGITAL_READ:
-    readDigital();
+    int pin = Wire.read();
+
+    readDigital(pin);
     break;
   }
 
