@@ -71,10 +71,10 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
 
 
 
-  ESP_LOGE(TAG, "digital read pin: %d ok: %d value %d ", pin, ok, read_buffer_);
+  ESP_LOGE(TAG, "digital read pin: %d ok: %d value %d ", pin, success, read_buffer_);
 
   uint8_t value = read_buffer_[0];
-    ESP_LOGE(TAG, "analog read pin: %d ok: %d value %d ", pin, ok, value);
+    ESP_LOGE(TAG, "analog read pin: %d ok: %d value %d ", pin, success, value);
 
   return value ;
 }
