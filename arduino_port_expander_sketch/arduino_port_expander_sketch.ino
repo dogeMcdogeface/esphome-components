@@ -11,8 +11,7 @@ Ports:
 #include <Arduino.h>
 #include <Wire.h>
 
-#define DEBUG // remove debug so pin 0 and 1 can be used for IO
-#define DEBUG_READ
+//#define DEBUG // remove debug so pin 0 and 1 can be used for IO
 
 #define I2C_ADDRESS 8
 
@@ -39,20 +38,57 @@ void setup()
 
 void loop()
 {
-
+  //int temp = analogRead(A1);
+  //Serial.println(temp);
 }
 
 volatile byte buffer[3];
 volatile byte len = 1;
 
-void readDigital(int pin)
+#define DIGITAL_READ(b, pin, mask) \
+  if (digitalRead(pin))            \
+    buffer[b] |= mask;
+
+void readDigital()
 {
-  int val = digitalRead(pin);
-  len = 1;
-  buffer[0] = val;
+  len = 3;
+  buffer[0] = 0;
+  DIGITAL_READ(0, 0, 1);
+  DIGITAL_READ(0, 1, 2);
+  DIGITAL_READ(0, 2, 4);
+  DIGITAL_READ(0, 3, 8);
+  DIGITAL_READ(0, 4, 16);
+  DIGITAL_READ(0, 5, 32);
+  DIGITAL_READ(0, 6, 64);
+  DIGITAL_READ(0, 7, 128);
+
+  buffer[1] = 0;
+  DIGITAL_READ(1, 8, 1);
+  DIGITAL_READ(1, 9, 2);
+  DIGITAL_READ(1, 10, 4);
+  DIGITAL_READ(1, 11, 8);
+  DIGITAL_READ(1, 12, 16);
+  DIGITAL_READ(1, 13, 32);
+  DIGITAL_READ(1, A0, 64);
+  DIGITAL_READ(1, A1, 128);
+
+  buffer[2] = 0;
+  DIGITAL_READ(2, A2, 1);
+  DIGITAL_READ(2, A3, 2);
+
+// I2C
+//DIGITAL_READ(2, A4, 4);
+//DIGITAL_READ(2, A5, 8);
+
+// DIGITAL READ not supports on A3 .. A7
 #ifdef DEBUG_READ
-  Serial.print(F("Read digital pin "));
-  Serial.println(pin);
+  Serial.print(F("Read 3 bytes: "));
+  Serial.print(buffer[0]);
+  Serial.print(' ');
+  Serial.print(buffer[1]);
+  Serial.print(' ');
+  Serial.println(buffer[2]);
+
 #endif
 }
 void readAnalog(int pin)
@@ -94,17 +130,15 @@ void onRequest()
 void onReceive(int numBytes)
 {
 #ifdef DEBUG_READ
-  //Serial.print(F("Received bytes: "));
-  //Serial.println(numBytes);
+  Serial.print("Received bytes: ");
+  Serial.println(numBytes);
 #endif
   int cmd = Wire.read();
 
   switch (cmd)
   {
   case CMD_DIGITAL_READ:
-    int pin = Wire.read();
-
-    readDigital(pin);
+    readDigital();
     break;
   }
 
@@ -132,16 +166,10 @@ void onReceive(int numBytes)
   }
   case CMD_WRITE_ANALOG:
   {
-    uint8_t aa =Wire.read();
-    uint8_t bb =Wire.read();
-    int val = aa | (bb << 8);
+    int val = Wire.read() | (Wire.read() << 8);
     analogWrite(pin, val);
 #ifdef DEBUG
-    Serial.print(F("aa "));
-    Serial.print(aa);
-    Serial.print(F(" bb "));
-    Serial.print(bb);
-    Serial.print(F(" Pin "));
+    Serial.print(F("Pin "));
     Serial.print(pin);
     Serial.print(F(" Analog write "));
     Serial.println(val);
@@ -186,3 +214,4 @@ void onReceive(int numBytes)
     break;
   }
 }
+
