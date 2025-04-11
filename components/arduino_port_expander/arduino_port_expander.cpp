@@ -61,10 +61,10 @@ bool ArduinoPortExpanderComponent::digital_read(uint8_t pin) {
 
 
 uint8_t buf[1] = {pin};
-uint16_t combined =pin | (CMD_DIGITAL_READ<<8 )
+uint16_t combined =pin | (CMD_DIGITAL_READ<<8 );
 
  //this->write_register(CMD_DIGITAL_READ, buf, 1, false);
-  this->write_register(CMD_DIGITAL_READ, nullptr, 0, false);
+  //this->write_register(CMD_DIGITAL_READ, nullptr, 0, false);
 
   success = (this->read_register16(combined, this->read_buffer_, 1) == i2c::ERROR_OK);
 
