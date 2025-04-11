@@ -23,6 +23,8 @@ class ArduinoPortExpanderComponent : public Component, public i2c::I2CDevice {
   bool digital_read(uint8_t pin);
   /// Helper function to write the value of a pin.
   void digital_write(uint8_t pin, bool value);
+  /// Helper function to set the pwm output of a pin.
+  void analog_write(uint8_t pin, uint16_t value);
   /// Helper function to read the voltage of a pin.
   float analog_read(uint8_t pin);
   /// Helper function to set the pin mode of a pin.
