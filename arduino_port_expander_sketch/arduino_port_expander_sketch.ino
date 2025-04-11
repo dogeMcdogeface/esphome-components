@@ -12,6 +12,7 @@ Ports:
 #include <Wire.h>
 
 //#define DEBUG // remove debug so pin 0 and 1 can be used for IO
+//#define DEBUG_READ
 
 #define I2C_ADDRESS 8
 
@@ -36,11 +37,7 @@ void setup()
 #endif
 }
 
-void loop()
-{
-  //int temp = analogRead(A1);
-  //Serial.println(temp);
-}
+void loop(){}
 
 volatile byte buffer[3];
 volatile byte len = 1;
@@ -52,7 +49,7 @@ volatile byte len = 1;
 void readDigital()
 {
   len = 3;
-  buffer[0] = 0;
+  /*buffer[0] = 0;
   DIGITAL_READ(0, 0, 1);
   DIGITAL_READ(0, 1, 2);
   DIGITAL_READ(0, 2, 4);
@@ -74,7 +71,11 @@ void readDigital()
 
   buffer[2] = 0;
   DIGITAL_READ(2, A2, 1);
-  DIGITAL_READ(2, A3, 2);
+  DIGITAL_READ(2, A3, 2);*/
+  buffer[0] = PIND;
+  buffer[1] = PINB;
+  buffer[2] = PINC;
+
 
 // I2C
 //DIGITAL_READ(2, A4, 4);
@@ -88,6 +89,7 @@ void readDigital()
   Serial.print(buffer[1]);
   Serial.print(' ');
   Serial.println(buffer[2]);
+
 
 #endif
 }
@@ -130,8 +132,8 @@ void onRequest()
 void onReceive(int numBytes)
 {
 #ifdef DEBUG_READ
-  Serial.print("Received bytes: ");
-  Serial.println(numBytes);
+  //Serial.print("Received bytes: ");
+  //Serial.println(numBytes);
 #endif
   int cmd = Wire.read();
 
